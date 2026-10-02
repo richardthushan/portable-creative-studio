@@ -6,7 +6,12 @@ import AdminPortfolio from './pages/AdminPortfolio';
 import AdminEnquiries from './pages/AdminEnquiries';
 import { getPortfolio } from './services/portfolioApi';
 import { getPublicSettings } from './services/settingsApi';
-
+import {
+  previewSettings,
+  previewServices,
+  previewPortfolio,
+} from './data/previewData';
+const PREVIEW_MODE = true;
 import {
 
   Menu,
@@ -534,75 +539,50 @@ function QuickInfo({ settings }) {
 }
 
 function Services() {
+  const [services, setServices] = useState(
+    PREVIEW_MODE ? previewServices : []
+  );
 
-  const [services, setServices] = useState([]);
-
-  const [loading, setLoading] = useState(true);
-
+  const [loading, setLoading] = useState(!PREVIEW_MODE);
   const [error, setError] = useState('');
 
-
-
   useEffect(() => {
+    if (PREVIEW_MODE) return;
 
     let active = true;
 
-
-
     async function loadServices() {
-
       try {
-
         const response = await getServices();
 
-
-
         if (active) {
-
-          setServices(Array.isArray(response?.data) ? response.data : []);
-
+          setServices(
+            Array.isArray(response?.data)
+              ? response.data
+              : []
+          );
         }
-
       } catch (err) {
-
         console.error('Services error:', err);
 
-
-
         if (active) {
-
           setError('Unable to load services.');
-
         }
-
       } finally {
-
         if (active) {
-
           setLoading(false);
-
         }
-
       }
-
     }
-
-
 
     loadServices();
 
-
-
     return () => {
-
       active = false;
-
     };
-
   }, []);
 
-
-
+ 
   const iconMap = {
 
     'wand-sparkles': WandSparkles,
@@ -741,9 +721,8 @@ function Services() {
 
   );
 
+
 }
-
-
 
 function Methods() {
 
@@ -1259,10 +1238,14 @@ function Album() {
 
 function Portfolio() {
   const [active, setActive] = useState('All');
-  const [portfolioItems, setPortfolioItems] = useState([]);
-  const [loading, setLoading] = useState(true);
 
+const [portfolioItems, setPortfolioItems] = useState(
+  PREVIEW_MODE ? previewPortfolio : []
+);
+
+const [loading, setLoading] = useState(!PREVIEW_MODE);
   useEffect(() => {
+    if (PREVIEW_MODE) return;
     loadPortfolioItems();
   }, []);
 
@@ -1873,20 +1856,27 @@ function Footer() {
 
 
 function App() {
-const [siteSettings, setSiteSettings] = useState({});
- useEffect(() => {
-  async function loadSiteSettings() {
-    try {
-      const response = await getPublicSettings();
+  const [siteSettings, setSiteSettings] = useState(
+    PREVIEW_MODE ? previewSettings : {}
+  );
 
-      setSiteSettings(response.data || response || {});
-    } catch (error) {
-      console.error('Settings loading error:', error);
+  useEffect(() => {
+    if (PREVIEW_MODE) {
+      return;
     }
-  }
 
-  loadSiteSettings();
-}, []);
+    async function loadSiteSettings() {
+      try {
+        const response = await getPublicSettings();
+
+        setSiteSettings(response.data || response || {});
+      } catch (error) {
+        console.error('Settings loading error:', error);
+      }
+    }
+
+    loadSiteSettings();
+  }, []);
 
 if (window.location.pathname === '/admin/login') {
 
