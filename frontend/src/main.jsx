@@ -10,7 +10,9 @@ import {
   previewSettings,
   previewServices,
   previewPortfolio,
-} from './data/previewData';
+} 
+from './data/previewData';
+
 const PREVIEW_MODE = true;
 import {
 
